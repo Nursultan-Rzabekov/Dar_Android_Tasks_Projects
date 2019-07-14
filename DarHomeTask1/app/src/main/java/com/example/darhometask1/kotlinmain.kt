@@ -9,14 +9,12 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.net.ConnectivityManager
 import android.os.AsyncTask
+import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.annotation.RequiresApi
 import android.support.design.widget.BaseTransientBottomBar
 import android.support.design.widget.Snackbar
-import android.support.v4.app.NotificationCompat
-import android.support.v4.app.NotificationManagerCompat
-import android.support.v4.content.ContextCompat
-import android.support.v7.app.AlertDialog
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
@@ -59,14 +57,6 @@ class kotlinmain : AppCompatActivity(),ConnectivityReceiver.ConnectivityReceiver
         lateinit var progressDialog: ProgressDialog
         var hasInternet = false
 
-        override fun onPreExecute() {
-            super.onPreExecute()
-            progressDialog = ProgressDialog(context)
-            progressDialog.setMessage("Download image from Internet")
-            progressDialog.setCancelable(false)
-            progressDialog.show()
-        }
-
         override fun doInBackground(vararg p0: Void?): String {
             if (isNetworkAvailable()) {
                 hasInternet = true
@@ -78,10 +68,11 @@ class kotlinmain : AppCompatActivity(),ConnectivityReceiver.ConnectivityReceiver
 
 
                 client.newCall(request).enqueue(object: Callback {
+                    @RequiresApi(Build.VERSION_CODES.O)
                     override fun onResponse(call: Call?, response: Response?) {
                         val body = response?.body()?.string()
                         val gson = Gson() //GsonBuilder().create()
-                        val fileName = cacheDir.absolutePath+"/PostJson.json"
+                        val fileName = cacheDir.absolutePath+"/PostJson11.json"
                         val file= File(fileName)
                         val inputString:String
                         val long:Long
@@ -90,6 +81,20 @@ class kotlinmain : AppCompatActivity(),ConnectivityReceiver.ConnectivityReceiver
                         println("!!!!!!!!!!!!!" + file.length())
 
                         if(!file.exists() && file.length() == long){
+                            val pendingIntent = PendingIntent.getActivity(context,0,intent, PendingIntent.FLAG_UPDATE_CURRENT)
+
+                            notificationChannel = NotificationChannel(channelId,description,NotificationManager.IMPORTANCE_HIGH)
+                            notificationChannel.enableLights(true)
+                            notificationChannel.lightColor = Color.GREEN
+                            notificationChannel.enableVibration(false)
+                            notificationManager.createNotificationChannel(notificationChannel)
+
+                            builder = Notification.Builder(context,channelId)
+                                .setSmallIcon(R.drawable.abc_ic_menu_cut_mtrl_alpha)
+                                .setLargeIcon(BitmapFactory.decodeResource(context.resources,R.drawable.ic_launcher_background))
+                                .setContentIntent(pendingIntent)
+                            notificationManager.notify(1234,builder.build())
+
                             val homeFeed = gson.fromJson(body, HomeFeed::class.java)
                             var jsonString:String = gson.toJson(homeFeed)
                             file.writeText(jsonString)
@@ -133,6 +138,7 @@ class kotlinmain : AppCompatActivity(),ConnectivityReceiver.ConnectivityReceiver
 
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onNetworkConnectionChanged(isConnected: Boolean) {
         showNetworkMessage(isConnected)
     }
@@ -144,12 +150,12 @@ class kotlinmain : AppCompatActivity(),ConnectivityReceiver.ConnectivityReceiver
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun showNetworkMessage(isConnected: Boolean) {
         if (!isConnected) {
             snackbar = Snackbar.make(findViewById(R.id.rootLayout), "You are offline", Snackbar.LENGTH_LONG)
             snackbar?.duration = BaseTransientBottomBar.LENGTH_INDEFINITE
             snackbar?.show()
-
             recyclerView_main.setVisibility(View.INVISIBLE)
 
 
@@ -157,40 +163,7 @@ class kotlinmain : AppCompatActivity(),ConnectivityReceiver.ConnectivityReceiver
             snackbar = Snackbar.make(findViewById(R.id.rootLayout), "You are online", Snackbar.LENGTH_LONG)
             snackbar?.duration = BaseTransientBottomBar.LENGTH_INDEFINITE
             snackbar?.show()
-
             recyclerView_main.setVisibility(View.VISIBLE)
-
-
-            val pendingIntent = PendingIntent.getActivity(this,0,intent, PendingIntent.FLAG_UPDATE_CURRENT)
-
-            notificationChannel = NotificationChannel(channelId,description,NotificationManager.IMPORTANCE_HIGH)
-            notificationChannel.enableLights(true)
-            notificationChannel.lightColor = Color.GREEN
-            notificationChannel.enableVibration(false)
-            notificationManager.createNotificationChannel(notificationChannel)
-
-            builder = Notification.Builder(this,channelId)
-                .setContent(contentView)
-                .setSmallIcon(R.drawable.ic_launcher_round)
-                .setLargeIcon(BitmapFactory.decodeResource(this.resources,R.drawable.ic_launcher))
-                .setContentIntent(pendingIntent)
-            notificationManager.notify(1234,builder.build())
-
-
-
-//            val notification = NotificationCompat.Builder(this,"image downloaded")
-//                .setContentTitle("Example Service")
-//                .setContentText("Image downloaded")
-//                //.setSmallIcon(R.drawable.ic_android)
-//                .setPriority(NotificationCompat.PRIORITY_HIGH)
-//                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-//                .build()
-//
-//
-//            notificationManager.notify(1, notification);
-//            val serviceIntent = Intent(context, ExampleService::class.java)
-//            serviceIntent.putExtra("inputExtra", "Image downloaded")
-//            ContextCompat.startForegroundService(context, serviceIntent)
         }
     }
 
