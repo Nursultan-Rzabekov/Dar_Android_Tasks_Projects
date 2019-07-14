@@ -27,6 +27,10 @@ class MainActivity : AppCompatActivity() {
         rv_animal_list.adapter = Adapter(listperson)
     }
 
+    fun just(a:Int,b:Int):Double {
+        return 5.0
+    }
+
 
 }
 
