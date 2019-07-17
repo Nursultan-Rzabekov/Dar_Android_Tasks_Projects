@@ -31,7 +31,7 @@ class kotlinmain : AppCompatActivity(),ConnectivityReceiver.ConnectivityReceiver
     lateinit var notificationManager : NotificationManager
     lateinit var notificationChannel : NotificationChannel
     lateinit var builder : Notification.Builder
-    private val channelId = "com.example.vicky.notificationexample"
+    private val channelId = "qwerty"
     private val description = "Test notification"
 
     private var snackbar: Snackbar? = null
@@ -64,8 +64,6 @@ class kotlinmain : AppCompatActivity(),ConnectivityReceiver.ConnectivityReceiver
                 val url = "https://api.letsbuildthatapp.com/youtube/home_feed"
                 val request = Request.Builder().url(url).build()
                 val response = client.newCall(request).execute()
-
-
 
                 client.newCall(request).enqueue(object: Callback {
                     @RequiresApi(Build.VERSION_CODES.O)
@@ -110,6 +108,7 @@ class kotlinmain : AppCompatActivity(),ConnectivityReceiver.ConnectivityReceiver
                             inputString = bufferedReader.use { it.readText() }
                             val homeFeed1 = gson.fromJson(inputString, HomeFeed::class.java)
                             runOnUiThread {
+                                println("<<><><>><><>< "  + homeFeed1)
                                 recyclerView_main.adapter = ImageViewAdapter(homeFeed1)
                             }
                         }
@@ -135,9 +134,6 @@ class kotlinmain : AppCompatActivity(),ConnectivityReceiver.ConnectivityReceiver
             }
         }
     }
-
-
-
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onNetworkConnectionChanged(isConnected: Boolean) {
         showNetworkMessage(isConnected)
@@ -166,9 +162,6 @@ class kotlinmain : AppCompatActivity(),ConnectivityReceiver.ConnectivityReceiver
             recyclerView_main.setVisibility(View.VISIBLE)
         }
     }
-
-
-
 
     private fun isNetworkAvailable(): Boolean {
         val connectivityManager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager

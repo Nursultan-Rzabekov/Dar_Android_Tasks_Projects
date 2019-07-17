@@ -9,8 +9,7 @@ import kotlinx.android.synthetic.main.image_row.view.*
 
 
 class ImageViewAdapter(val homeFeed: HomeFeed): RecyclerView.Adapter<CustomViewHolder>() {
-
-
+    
     // numberOfItems
     override fun getItemCount(): Int {
         return homeFeed.videos.count()
