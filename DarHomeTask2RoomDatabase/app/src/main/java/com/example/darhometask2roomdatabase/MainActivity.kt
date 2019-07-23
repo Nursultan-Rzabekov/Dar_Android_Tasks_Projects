@@ -31,6 +31,10 @@ class MainActivity : AppCompatActivity() {
         }
 
 
+        toast("sad")
+
+
+
         btnSave.setOnClickListener {
             if (!etEnterText.text.toString().isEmpty()) {
                 val chapterObj = UserModel(etEnterText.text.toString())
@@ -66,6 +70,8 @@ class MainActivity : AppCompatActivity() {
         else{
             Toast.makeText(this, "NOOOOOOOO", Toast.LENGTH_LONG).show()
         }
+
+
     }
 
 
@@ -107,13 +113,13 @@ class MainActivity : AppCompatActivity() {
             return context.userDatabase!!.userDao().getAllChapter()
         }
 
-        override fun onPostExecute(chapterList: List<UserModel>?) {
+        override fun onPostExecute(userList: List<UserModel>?) {
             //context.recycler_view.adapter = UserAddAdapter(chapterList)
-            if (chapterList!!.size > 0) {
+            if (userList!!.size > 0) {
                 //for (i in 0..chapterList.size - 1) {
-                    println("???????????????" + chapterList)
+                    println("???????????????" + userList)
                     context.runOnUiThread {
-                        context.recycler_view.adapter = UserAddAdapter(chapterList)
+                        context.recycler_view.adapter = UserAddAdapter(userList)
                     }
 
                 //}
@@ -182,4 +188,9 @@ class MainActivity : AppCompatActivity() {
             }
             builder.show()
     }
+
+
+
 }
+
+

@@ -1,10 +1,9 @@
 package com.example.darhometask2roomdatabase
 
-import android.app.AlertDialog
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.useritem.view.*
 
@@ -12,7 +11,6 @@ import kotlinx.android.synthetic.main.useritem.view.*
 class UserAddAdapter(val userlist: List<UserModel>?): RecyclerView.Adapter<UserAddAdapter.CustomViewHolder>() {
 
     var onItemClick: ((UserModel) -> Unit)? = null
-
 
     override fun getItemCount(): Int {
         println("||||<><>><>>|" + userlist?.count())
@@ -32,6 +30,7 @@ class UserAddAdapter(val userlist: List<UserModel>?): RecyclerView.Adapter<UserA
     override fun onBindViewHolder(p0: CustomViewHolder, position: Int) {
         val user = userlist?.get(position)
         p0?.user_name?.text = user?.userName
+
 
         p0?.user_name.setOnClickListener{
             //Toast.makeText(, "Updated", Toast.LENGTH_LONG).show()
