@@ -1,6 +1,7 @@
 package com.example.retrofitkotlin
 
-object ApiSettings {
+object
+ApiSettings {
 
     const val GET_LANGUAGES = "languages/"
     const val STORE_LANGUAGE = "languages/store"
