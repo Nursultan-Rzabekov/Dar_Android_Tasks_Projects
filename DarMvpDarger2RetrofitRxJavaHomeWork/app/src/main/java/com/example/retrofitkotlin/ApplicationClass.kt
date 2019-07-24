@@ -7,7 +7,7 @@ import com.example.retrofitkotlin.dagger.module.NetworkModule
 
 
 open class ApplicationClass : Application() {
-    public lateinit var applicationComponent: ApplicationComponent
+    lateinit var applicationComponent: ApplicationComponent
 
     override fun onCreate() {
         super.onCreate()

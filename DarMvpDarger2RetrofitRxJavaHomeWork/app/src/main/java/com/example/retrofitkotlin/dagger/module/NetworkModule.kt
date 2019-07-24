@@ -16,7 +16,9 @@ import java.util.concurrent.TimeUnit
 
 @Module
 class NetworkModule {
+
     private val BASE_URL = "http://10.0.2.2:8000/api/"
+
     @Provides
     fun getHeaders(): HashMap<String, String> {
         val params = HashMap<String, String>()
@@ -76,7 +78,7 @@ class NetworkModule {
             chain.proceed(builder.build())
         }
 
-//        val timeout = getTimeOut()
+        val timeout = getTimeOut()
         okBuilder.connectTimeout(timeout.toLong(), TimeUnit.SECONDS)
         okBuilder.readTimeout(timeout.toLong(), TimeUnit.SECONDS)
         okBuilder.writeTimeout(timeout.toLong(), TimeUnit.SECONDS)
