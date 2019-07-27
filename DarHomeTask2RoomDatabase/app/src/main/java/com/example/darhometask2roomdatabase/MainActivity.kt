@@ -117,7 +117,7 @@ class MainActivity : AppCompatActivity() {
             //context.recycler_view.adapter = UserAddAdapter(chapterList)
             if (userList!!.size > 0) {
                 //for (i in 0..chapterList.size - 1) {
-                    println("???????????????" + userList)
+                    println("?" + userList)
                     context.runOnUiThread {
                         context.recycler_view.adapter = UserAddAdapter(userList)
                     }
@@ -169,7 +169,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    internal fun updatefunc(user_name:String,upuser_name:String){
+    private fun updatefunc(user_name:String,upuser_name:String){
         val builder = AlertDialog.Builder(this)
             builder.setTitle(user_name)
             builder.setMessage(upuser_name)

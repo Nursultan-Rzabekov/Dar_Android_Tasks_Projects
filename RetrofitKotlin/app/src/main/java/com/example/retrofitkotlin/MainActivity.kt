@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity(), MyAdapter.Listener {
         loadData()
 
         fab.setOnClickListener{
-            Toast.makeText(this, "YEEESS", Toast.LENGTH_LONG).show()
+            Toast.makeText(this, "YES", Toast.LENGTH_LONG).show()
             newDialog()
         }
 
@@ -76,6 +76,7 @@ class MainActivity : AppCompatActivity(), MyAdapter.Listener {
             .addConverterFactory(GsonConverterFactory.create())
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .build().create(RetrofitApiInterface::class.java)
+
 
         myCompositeDisposable?.add(requestInterface.getData() //Add all RxJava disposables to a CompositeDisposable//
             .observeOn(AndroidSchedulers.mainThread()) //Send the Observable’s notifications to the main UI thread//

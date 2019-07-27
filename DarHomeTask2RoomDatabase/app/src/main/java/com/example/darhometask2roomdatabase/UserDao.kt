@@ -20,6 +20,7 @@ interface UserDao {
     @Query("DELETE FROM UserTable WHERE user_name = :userid")
     fun deletetablebyid(userid: String?)
 
+
     @Query("UPDATE UserTable SET user_name=:userid WHERE user_name = :id")
     fun updateTable(userid: String?,id: String?)
 }
