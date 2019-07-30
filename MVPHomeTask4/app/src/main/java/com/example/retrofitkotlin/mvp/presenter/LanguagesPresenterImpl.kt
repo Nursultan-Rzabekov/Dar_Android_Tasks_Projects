@@ -10,6 +10,7 @@ import io.reactivex.internal.schedulers.IoScheduler
 import javax.inject.Inject
 
 class LanguagesPresenterImpl(var postView: LanguagesView, applicationComponent: Application) : LanguagesPresenter, Presenter<LanguagesView>(postView) {
+
     @Inject
     lateinit var mNetworkApi: RetrofitApiInterfaceNetwork
 
@@ -75,10 +76,10 @@ class LanguagesPresenterImpl(var postView: LanguagesView, applicationComponent: 
 
     }
 
-    override fun deletePosts(position: Int) {
+    override fun deletePosts(position: Int,db_position: Int) {
         val view = view()
         view?.let {
-            val deletePost = mNetworkApi.deleteLanguage(position)
+            val deletePost = mNetworkApi.deleteLanguage(db_position)
             addDisposable(deletePost.subscribeOn(IoScheduler())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
