@@ -19,13 +19,17 @@ import com.example.kotlincoroutines.roomdb.persistence.LanguagesDatabase
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.dialog_store.*
 import kotlinx.android.synthetic.main.language_detail.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlin.coroutines.CoroutineContext
 
 
 class LanguagesTestActivity : BaseActivity(), IRoomLanguagesView,
-    LanguagesView, MyRecyclerTestViewAdapter.Listener{
+    LanguagesView, MyRecyclerTestViewAdapter.Listener,CoroutineScope{
+
+    private var viewModelJob = Job()
+    override val coroutineContext: CoroutineContext
+        get() = viewModelJob + Dispatchers.Main
+
     private var postPresenterGetRequest: LanguagesPresenterImpl?=null
     private var postPresenter: RoomLanguagesPresenterImpl?=null
     private var myLanguageArrayList: ArrayList<LanguageRoomDB>? = null
@@ -37,9 +41,8 @@ class LanguagesTestActivity : BaseActivity(), IRoomLanguagesView,
 
     // ABSTRACT FUNCTION INIT
     override fun init(savedInstanceState: Bundle?) {
-        GlobalScope.launch(Dispatchers.Main) {
-            getPresenter()?.getAllLanguage()
-        }
+
+        getPresenter()?.getAllLanguage()
         fab.setOnClickListener{
             newDialog()
         }
@@ -63,7 +66,7 @@ class LanguagesTestActivity : BaseActivity(), IRoomLanguagesView,
 
     // PRESENTER REST API (RETROFIT)
     private fun getPresenterRequest(): LanguagesPresenterImpl?{
-        postPresenterGetRequest = LanguagesPresenterImpl(this, application)
+        postPresenterGetRequest = LanguagesPresenterImpl(this, application,coroutineContext)
         return postPresenterGetRequest
 
     }
@@ -72,7 +75,7 @@ class LanguagesTestActivity : BaseActivity(), IRoomLanguagesView,
     private fun getPresenter(): RoomLanguagesPresenterImpl?{
         val languageDatabase = LanguagesDatabase.getInstance(this)
         val viewModel = RoomRepository(languageDatabase.languageDao())
-        postPresenter = RoomLanguagesPresenterImpl(this, viewModel)
+        postPresenter = RoomLanguagesPresenterImpl(this, viewModel,coroutineContext)
         return postPresenter
     }
 
@@ -87,7 +90,11 @@ class LanguagesTestActivity : BaseActivity(), IRoomLanguagesView,
         postPresenter?.let {
             postPresenter = null
         }
+        postPresenterGetRequest?.let {
+            postPresenterGetRequest = null
+        }
 
+        coroutineContext.cancel()
     }
 
     //GET DATA FROM SERVER REST API REQUEST

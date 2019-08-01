@@ -5,13 +5,10 @@ import com.example.kotlincoroutines.RemoteDataNotFoundException
 import com.example.kotlincoroutines.ReposRefreshError
 import com.example.kotlincoroutines.data.LanguageRoomDB
 import com.example.kotlincoroutines.roomdb.dao.LanguageDao
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.util.ArrayList
 
-class RoomRepository(private val dataSource: LanguageDao): IRoomRepository {
+class RoomRepository(private val dataSource: LanguageDao): IRoomRepository{
 
     override suspend fun getByLanguageID(position: Int): String? {
         return try {
@@ -33,32 +30,30 @@ class RoomRepository(private val dataSource: LanguageDao): IRoomRepository {
         }
     }
 
-    override fun storeLanguage(language_name: String) = runBlocking{
+    override suspend fun storeLanguage(language_name: String) {
         try {
-            this.launch(Dispatchers.IO){
+            withContext(Dispatchers.IO){
                 val language = LanguageRoomDB(language_name)
                 dataSource.insertLanguage(language)
             }
         }catch (error: RemoteDataNotFoundException){
-            throw  ReposRefreshError(error)
+            throw ReposRefreshError(error)
         }
-
     }
 
-    override fun storeAllLanguage(languagelist: ArrayList<LanguageRoomDB>?) = runBlocking{
+    override suspend fun storeAllLanguage(languagelist: ArrayList<LanguageRoomDB>?) {
         try {
-            this.launch(Dispatchers.Default){
+            withContext(Dispatchers.Default){
                 dataSource.insertAllLanguage(languagelist)
             }
         } catch (error: RemoteDataNotFoundException){
             throw ReposRefreshError(error)
         }
-
     }
 
-    override fun updateLanguageName(position: Int, language_name: String) = runBlocking {
+    override suspend fun updateLanguageName(position: Int, language_name: String) {
         try {
-            this.launch(Dispatchers.IO){
+            withContext(Dispatchers.IO){
                 val language = LanguageRoomDB(position+1, language_name)
                 dataSource.updateLanguage(language)
             }
@@ -67,9 +62,9 @@ class RoomRepository(private val dataSource: LanguageDao): IRoomRepository {
         }
     }
 
-    override fun deleteLanguageID(position: Int) = runBlocking{
+    override suspend fun deleteLanguageID(position: Int) {
         try {
-            this.launch(Dispatchers.IO){
+            withContext(Dispatchers.IO){
                 dataSource.deleteLanguageByID(position+1)
             }
         }catch (error: RemoteDataNotFoundException){
@@ -77,9 +72,9 @@ class RoomRepository(private val dataSource: LanguageDao): IRoomRepository {
         }
     }
 
-    override fun deleteAllLanguageById() = runBlocking{
+    override suspend fun deleteAllLanguageById() {
         try {
-            this.launch(Dispatchers.Default){
+            withContext(Dispatchers.Default){
                 dataSource.deleteAllLanguage()
             }
         }

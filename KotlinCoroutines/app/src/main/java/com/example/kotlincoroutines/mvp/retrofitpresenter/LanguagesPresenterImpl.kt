@@ -8,8 +8,10 @@ import com.example.kotlincoroutines.data.LanguageRoomDB
 import com.example.retrofitkotlin.network.RetrofitApiInterfaceNetwork
 import kotlinx.coroutines.*
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
-class LanguagesPresenterImpl(var postView: LanguagesView, applicationComponent: Application) : LanguagesPresenter {
+class LanguagesPresenterImpl(var postView: LanguagesView, applicationComponent: Application, override val coroutineContext: CoroutineContext
+) : LanguagesPresenter,CoroutineScope {
     @Inject
     lateinit var mNetworkApi: RetrofitApiInterfaceNetwork
 
@@ -17,50 +19,56 @@ class LanguagesPresenterImpl(var postView: LanguagesView, applicationComponent: 
         (applicationComponent as ApplicationClass).applicationComponent.inject(this)
     }
 
-    override fun getAllPosts() = runBlocking{
+    override fun getAllPosts() =
         try {
             this.launch(Dispatchers.IO){
                 val allPosts = mNetworkApi.getAllLanguage()
-                postView.showAllPosts(allPosts)
+                withContext(coroutineContext){
+                    postView.showAllPosts(allPosts)
+                }
             }
 
         } catch (error: RemoteDataNotFoundException){
             throw  ReposRefreshError(error)
         }
-    }
 
-    override fun storePosts(store: String) = runBlocking {
+    override fun storePosts(store: String) =
         try{
             this.launch(Dispatchers.IO){
                 val languageModel = LanguageRoomDB(store)
                 val storePosts = mNetworkApi.storeLanguage(languageModel)
-                postView.storePost(storePosts)
+                withContext(coroutineContext){
+                    postView.storePost(storePosts)
+                }
+
             }
         }catch (error: RemoteDataNotFoundException){
             throw  ReposRefreshError(error)
         }
-    }
 
-    override fun updatePosts(position: Int,store: String,db_position:Int) = runBlocking {
+    override fun updatePosts(position: Int,store: String,db_position:Int) =
         try {
             this.launch(Dispatchers.IO){
                 val languageModel = LanguageRoomDB(store)
                 val model = mNetworkApi.updateLanguage(db_position,languageModel)
-                postView.updatePost(position,model)
+                withContext(coroutineContext){
+                    postView.updatePost(position,model)
+                }
             }
         }catch (error: RemoteDataNotFoundException){
             throw  ReposRefreshError(error)
         }
-    }
 
-    override fun deletePosts(position: Int,db_position: Int)  = runBlocking{
+
+    override fun deletePosts(position: Int,db_position: Int)  =
         try {
             this.launch(Dispatchers.IO){
                 mNetworkApi.deleteLanguage(db_position)
-                postView.deletePost(position)
+                withContext(coroutineContext){
+                    postView.deletePost(position)
+                }
             }
         }catch (error: RemoteDataNotFoundException){
             throw  ReposRefreshError(error)
         }
-    }
 }

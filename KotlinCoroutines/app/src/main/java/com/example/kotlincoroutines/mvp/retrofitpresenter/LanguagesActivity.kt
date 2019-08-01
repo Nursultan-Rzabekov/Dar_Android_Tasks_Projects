@@ -15,16 +15,18 @@ import com.example.kotlincoroutines.mvp.adapters.MyRecyclerTestViewAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.dialog_store.*
 import kotlinx.android.synthetic.main.language_detail.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlin.coroutines.CoroutineContext
 
 
-class LanguagesActivity : BaseActivity(), LanguagesView, MyRecyclerTestViewAdapter.Listener{
+class LanguagesActivity : BaseActivity(), LanguagesView, MyRecyclerTestViewAdapter.Listener,CoroutineScope{
+    private var viewModelJob = Job()
+    override val coroutineContext: CoroutineContext
+        get() = viewModelJob + Dispatchers.Main
+
     private var postPresenter: LanguagesPresenterImpl?=null
     private var myLanguageArrayList: ArrayList<LanguageRoomDB>? = null
-    private var viewModelJob = Job()
+
 
     override fun setLayout(): Int {
         return R.layout.activity_main
@@ -51,7 +53,7 @@ class LanguagesActivity : BaseActivity(), LanguagesView, MyRecyclerTestViewAdapt
     }
 
     private fun getPresenter(): LanguagesPresenterImpl?{
-        postPresenter = LanguagesPresenterImpl(this, application)
+        postPresenter = LanguagesPresenterImpl(this, application,coroutineContext)
         return postPresenter
     }
 
@@ -63,7 +65,7 @@ class LanguagesActivity : BaseActivity(), LanguagesView, MyRecyclerTestViewAdapt
         postPresenter?.let {
             postPresenter = null
         }
-        viewModelJob.cancel()
+        coroutineContext.cancel()
     }
 
     override fun showAllPosts(languagesList: List<LanguageRoomDB>) {
@@ -73,26 +75,19 @@ class LanguagesActivity : BaseActivity(), LanguagesView, MyRecyclerTestViewAdapt
     }
 
     override fun storePost(languageData: LanguageRoomDB) {
-        GlobalScope.launch(Dispatchers.Main){
-            myLanguageArrayList?.add(languageData)
-            recycler_view.adapter?.notifyItemInserted(myLanguageArrayList?.lastIndex!!)
-        }
+        myLanguageArrayList?.add(languageData)
+        recycler_view.adapter?.notifyItemInserted(myLanguageArrayList?.lastIndex!!)
     }
 
     override fun updatePost(position: Int, language:LanguageRoomDB) {
-        GlobalScope.launch(Dispatchers.Main){
-            myLanguageArrayList?.removeAt(position)
-            myLanguageArrayList?.add(position,language)
-            recycler_view.adapter?.notifyItemChanged(position)
-        }
+        myLanguageArrayList?.removeAt(position)
+        myLanguageArrayList?.add(position,language)
+        recycler_view.adapter?.notifyItemChanged(position)
     }
 
     override fun deletePost(position: Int) {
-        GlobalScope.launch(Dispatchers.Main){
-            myLanguageArrayList?.removeAt(position)
-            recycler_view.adapter?.notifyItemRemoved(position)
-        }
-
+        myLanguageArrayList?.removeAt(position)
+        recycler_view.adapter?.notifyItemRemoved(position)
     }
 
     override fun onItemClick(language: LanguageRoomDB, position: Int) {
