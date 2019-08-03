@@ -6,7 +6,6 @@ import com.example.cleanarhitecturewithmvp.domain.model.Language
 
 interface IRoomRepository {
 
-
     suspend fun getAllLanguage() : List<Language>
 
     suspend fun storeLanguage(store:String)

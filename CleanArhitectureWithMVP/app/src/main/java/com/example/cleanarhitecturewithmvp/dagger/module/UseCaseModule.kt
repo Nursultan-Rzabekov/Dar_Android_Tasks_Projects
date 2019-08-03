@@ -1,5 +1,8 @@
 package com.example.cleanarhitecturewithmvp.dagger.module
 
+import com.example.cleanarhitecturewithmvp.data.dao.LanguageDao
+import com.example.cleanarhitecturewithmvp.data.mapper.LanguageModelConverter
+import com.example.cleanarhitecturewithmvp.data.repository.RoomRepository
 import com.example.cleanarhitecturewithmvp.domain.repository.IRoomRepository
 import com.example.cleanarhitecturewithmvp.domain.usecase.delete.DeleteAllLanguageUseCase
 import com.example.cleanarhitecturewithmvp.domain.usecase.delete.DeleteLanguageUseCase
@@ -16,13 +19,18 @@ import javax.inject.Singleton
 @Module
 class UseCaseModule {
 
+    @Provides
+    @Singleton
+    fun provideRoomRepository(languageDao: LanguageDao, languageModelConverter: LanguageModelConverter): IRoomRepository {
+        return RoomRepository(languageDao,languageModelConverter)
+    }
+
 
     @Provides
     @Singleton
     fun provideGetLanguageByIdUseCase(iRoomRepository: IRoomRepository): GetLanguageByIdUseCase {
         return GetLanguageByIdUseCase(iRoomRepository)
     }
-
 
     @Provides
     @Singleton

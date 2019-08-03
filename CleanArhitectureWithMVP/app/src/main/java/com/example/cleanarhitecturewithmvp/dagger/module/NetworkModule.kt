@@ -27,7 +27,7 @@ class NetworkModule {
 
 
     @Provides
-    protected fun provideHttpLoggingInterceptor(): HttpLoggingInterceptor {
+    fun provideHttpLoggingInterceptor(): HttpLoggingInterceptor {
         val interceptor = HttpLoggingInterceptor()
         interceptor.level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
         return interceptor
@@ -61,7 +61,7 @@ class NetworkModule {
 
 
     @Provides
-    protected fun provideOkHttpClientDefault(interceptor: HttpLoggingInterceptor, headers: HashMap<String, String>): OkHttpClient {
+    fun provideOkHttpClientDefault(interceptor: HttpLoggingInterceptor, headers: HashMap<String, String>): OkHttpClient {
         val okBuilder = OkHttpClient.Builder()
         okBuilder.addInterceptor(interceptor)
         okBuilder.addInterceptor { chain ->

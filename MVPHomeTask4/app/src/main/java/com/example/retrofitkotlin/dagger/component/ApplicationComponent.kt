@@ -7,6 +7,7 @@ import com.example.retrofitkotlin.mvp.presenter.LanguagesPresenterImpl
 import dagger.Component
 
 @Component(modules = [AppModule::class, NetworkModule::class])
+
 interface ApplicationComponent {
     fun inject(mewApplication: ApplicationClass)
 

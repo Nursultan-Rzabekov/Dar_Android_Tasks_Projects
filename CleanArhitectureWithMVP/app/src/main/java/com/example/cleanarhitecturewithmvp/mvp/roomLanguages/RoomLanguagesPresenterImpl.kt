@@ -41,8 +41,6 @@ class RoomLanguagesPresenterImpl(var postViewI: IRoomLanguagesView, applicationC
     lateinit var provideUpdateLanguageUseCase: UpdateLanguageUseCase
 
 
-
-
     init {
         (applicationComponent as ApplicationClass).applicationComponent.inject(this)
     }

@@ -3,6 +3,7 @@ package com.example.retrofitkotlin
 import android.app.Application
 import com.example.retrofitkotlin.dagger.component.ApplicationComponent
 import com.example.retrofitkotlin.dagger.component.DaggerApplicationComponent
+import com.example.retrofitkotlin.dagger.module.AppModule
 import com.example.retrofitkotlin.dagger.module.NetworkModule
 
 

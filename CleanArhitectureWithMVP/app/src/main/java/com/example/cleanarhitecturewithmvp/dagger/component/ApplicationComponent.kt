@@ -15,7 +15,5 @@ import javax.inject.Singleton
 interface ApplicationComponent {
 
     fun inject(mewApplication: ApplicationClass)
-    
     fun inject(mPostPresenterImpl: RoomLanguagesPresenterImpl)
 }
-

@@ -8,11 +8,7 @@ import javax.inject.Singleton
 @Module
 class AppModule(application: Application) {
 
-    private var applicationInst: Application
-
-    init {
-        applicationInst = application
-    }
+    private var applicationInst: Application = application
 
     @Provides
     @Singleton

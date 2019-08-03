@@ -53,7 +53,7 @@ class LanguagesTestActivity : BaseActivity(), IRoomLanguagesView, MyRecyclerTest
 
     // PRESENTER ROOM DATABASE
     private fun getPresenter(): RoomLanguagesPresenterImpl?{
-        postPresenter = RoomLanguagesPresenterImpl(this,application)
+        postPresenter = RoomLanguagesPresenterImpl(this, application)
         return postPresenter
     }
 
