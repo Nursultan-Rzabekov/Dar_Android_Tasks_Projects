@@ -9,6 +9,7 @@ import dagger.Component
 @Component(modules = [AppModule::class, NetworkModule::class])
 interface ApplicationComponent {
     fun inject(mewApplication: ApplicationClass)
+
     fun inject(mPostPresenterImpl: LanguagesPresenterImpl)
 
 }

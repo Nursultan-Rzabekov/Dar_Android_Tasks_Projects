@@ -24,11 +24,7 @@ import kotlin.coroutines.CoroutineContext
 
 
 class LanguagesTestActivity : BaseActivity(), IRoomLanguagesView,
-    LanguagesView, MyRecyclerTestViewAdapter.Listener,CoroutineScope{
-
-    private var viewModelJob = Job()
-    override val coroutineContext: CoroutineContext
-        get() = viewModelJob + Dispatchers.Main
+    LanguagesView, MyRecyclerTestViewAdapter.Listener{
 
     private var postPresenterGetRequest: LanguagesPresenterImpl?=null
     private var postPresenter: RoomLanguagesPresenterImpl?=null
@@ -41,8 +37,8 @@ class LanguagesTestActivity : BaseActivity(), IRoomLanguagesView,
 
     // ABSTRACT FUNCTION INIT
     override fun init(savedInstanceState: Bundle?) {
-
         getPresenter()?.getAllLanguage()
+
         fab.setOnClickListener{
             newDialog()
         }
@@ -66,7 +62,7 @@ class LanguagesTestActivity : BaseActivity(), IRoomLanguagesView,
 
     // PRESENTER REST API (RETROFIT)
     private fun getPresenterRequest(): LanguagesPresenterImpl?{
-        postPresenterGetRequest = LanguagesPresenterImpl(this, application,coroutineContext)
+        postPresenterGetRequest = LanguagesPresenterImpl(this, application)
         return postPresenterGetRequest
 
     }
@@ -75,7 +71,7 @@ class LanguagesTestActivity : BaseActivity(), IRoomLanguagesView,
     private fun getPresenter(): RoomLanguagesPresenterImpl?{
         val languageDatabase = LanguagesDatabase.getInstance(this)
         val viewModel = RoomRepository(languageDatabase.languageDao())
-        postPresenter = RoomLanguagesPresenterImpl(this, viewModel,coroutineContext)
+        postPresenter = RoomLanguagesPresenterImpl(this, viewModel)
         return postPresenter
     }
 
@@ -87,26 +83,25 @@ class LanguagesTestActivity : BaseActivity(), IRoomLanguagesView,
 
     // ABSTRACT FUNCTION
     override fun stopScreen() {
+        super.onStop()
         postPresenter?.let {
             postPresenter = null
+            postPresenter?.onDestroy()
         }
         postPresenterGetRequest?.let {
             postPresenterGetRequest = null
+            postPresenterGetRequest?.onDestroy()
         }
-
-        coroutineContext.cancel()
     }
 
     //GET DATA FROM SERVER REST API REQUEST
     override fun showAllPosts(languagesList: List<LanguageRoomDB>) {
-        GlobalScope.launch(Dispatchers.Main) {
-            val a = myLanguageArrayList?.count()
-            for (i in 0 until languagesList.count()) {
-                myLanguageArrayList?.add(a!! + i, languagesList.elementAt(i))
-            }
-            getPresenter()?.storeLanguageAll(myLanguageArrayList)
-            recycler_view.adapter?.notifyDataSetChanged()
+        val a = myLanguageArrayList?.count()
+        for (i in 0 until languagesList.count()) {
+            myLanguageArrayList?.add(a!! + i, languagesList.elementAt(i))
         }
+        getPresenter()?.storeLanguageAll(myLanguageArrayList)
+        recycler_view.adapter?.notifyDataSetChanged()
     }
 
     override fun storePost(languageData: LanguageRoomDB) {

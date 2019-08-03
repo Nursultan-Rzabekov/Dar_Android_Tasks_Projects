@@ -10,8 +10,12 @@ import kotlinx.coroutines.*
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
-class LanguagesPresenterImpl(var postView: LanguagesView, applicationComponent: Application, override val coroutineContext: CoroutineContext
-) : LanguagesPresenter,CoroutineScope {
+class LanguagesPresenterImpl(var postView: LanguagesView, applicationComponent: Application) : LanguagesPresenter,CoroutineScope {
+
+    private var viewModelJob = Job()
+    override val coroutineContext: CoroutineContext
+        get() = viewModelJob + Dispatchers.Main
+
     @Inject
     lateinit var mNetworkApi: RetrofitApiInterfaceNetwork
 
@@ -71,4 +75,8 @@ class LanguagesPresenterImpl(var postView: LanguagesView, applicationComponent: 
         }catch (error: RemoteDataNotFoundException){
             throw  ReposRefreshError(error)
         }
+
+    internal fun onDestroy(){
+        coroutineContext.cancel()
+    }
 }

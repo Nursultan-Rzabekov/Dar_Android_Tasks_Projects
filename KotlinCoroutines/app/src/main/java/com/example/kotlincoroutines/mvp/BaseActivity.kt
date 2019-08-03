@@ -33,10 +33,6 @@ abstract class BaseActivity : AppCompatActivity(),IView {
 
     }
 
-    override fun onResume() {
-        super.onResume()
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         System.gc()
@@ -101,10 +97,5 @@ abstract class BaseActivity : AppCompatActivity(),IView {
 
     private fun showHttpError(e: Throwable) {
       loadError(e.localizedMessage)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        stopScreen()
     }
 }

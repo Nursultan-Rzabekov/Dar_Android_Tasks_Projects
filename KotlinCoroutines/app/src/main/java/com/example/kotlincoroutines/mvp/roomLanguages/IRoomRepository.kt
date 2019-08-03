@@ -8,11 +8,18 @@ import kotlinx.coroutines.Job
 
 
 interface IRoomRepository {
+
     suspend fun getAllLanguage() : List<LanguageRoomDB>
+
     suspend fun storeLanguage(store:String)
+
     suspend fun updateLanguageName(position: Int, language: String)
+
     suspend fun deleteLanguageID(position: Int)
+
     suspend fun getByLanguageID(position: Int): String?
+
     suspend fun storeAllLanguage(languagelist:ArrayList<LanguageRoomDB>?)
+
     suspend fun deleteAllLanguageById()
 }

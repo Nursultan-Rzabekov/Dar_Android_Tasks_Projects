@@ -2,27 +2,31 @@ package com.example.kotlincoroutines.mvp.roomLanguages
 
 
 import com.example.kotlincoroutines.data.LanguageRoomDB
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 
 
-class RoomLanguagesPresenterImpl(var postViewI: IRoomLanguagesView, var viewModel: RoomRepository,
-                                 override val coroutineContext: CoroutineContext
-): IRoomLanguagesPresenter,CoroutineScope{
+class RoomLanguagesPresenterImpl(var postViewI: IRoomLanguagesView, var viewModel: RoomRepository): IRoomLanguagesPresenter, CoroutineScope{
 
-    override suspend fun getByLanguageID(position: Int) {
-        viewModel.getByLanguageID(position)
+    private var viewModelJob = Job()
+    override val coroutineContext: CoroutineContext
+        get() = viewModelJob + Dispatchers.Main
+
+    override fun getByLanguageID(position: Int) {
+        this.launch(coroutineContext){
+            viewModel.getByLanguageID(position)
+        }
     }
 
     override fun getAllLanguage() =
         this.launch(coroutineContext){
-            viewModel.getAllLanguage()
             postViewI.showAllLanguage(viewModel.getAllLanguage())
         }
 
-    override suspend fun storeLanguageAll(languageList: ArrayList<LanguageRoomDB>?) {
-        viewModel.storeAllLanguage(languageList)
+    override fun storeLanguageAll(languageList: ArrayList<LanguageRoomDB>?) {
+        this.launch(coroutineContext){
+            viewModel.storeAllLanguage(languageList)
+        }
     }
 
     override fun storeLanguage(language: String) {
@@ -53,6 +57,10 @@ class RoomLanguagesPresenterImpl(var postViewI: IRoomLanguagesView, var viewMode
             viewModel.deleteLanguageID(position)
             postViewI.deleteLanguageByLanguageID(position)
         }
+    }
+
+    internal fun onDestroy(){
+        coroutineContext.cancel()
     }
 }
 

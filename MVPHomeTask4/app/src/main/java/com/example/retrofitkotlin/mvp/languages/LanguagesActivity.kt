@@ -125,7 +125,7 @@ class LanguagesActivity : BaseActivity(), LanguagesView, MyRecyclerTestViewAdapt
         builder.setPositiveButton(android.R.string.yes) { _ , _ ->
             getPresenter()?.let {
                 if(editText.text.toString().isNotEmpty()){
-                    it.updatePosts(position, editText.text.toString(),language.id!!)
+                    it.updatePosts(position, editText.text.toString(),language.id)
                 }
             }
         }
