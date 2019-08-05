@@ -1,12 +1,11 @@
 package com.example.cleanarhitecturewithmvp.dagger.module
 
-import com.example.cleanarhitecturewithmvp.data.dao.LanguageDao
 import com.example.cleanarhitecturewithmvp.data.mapper.LanguageModelConverter
-import com.example.cleanarhitecturewithmvp.data.repository.RoomRepository
+import com.example.cleanarhitecturewithmvp.data.DataRepositoryImpl
+import com.example.cleanarhitecturewithmvp.data.mapper.LanguageModelConverterImpl
+import com.example.cleanarhitecturewithmvp.data.source.LanguageDataStoreFactory
 import com.example.cleanarhitecturewithmvp.domain.repository.IRoomRepository
-import com.example.cleanarhitecturewithmvp.domain.usecase.delete.DeleteAllLanguageUseCase
 import com.example.cleanarhitecturewithmvp.domain.usecase.delete.DeleteLanguageUseCase
-import com.example.cleanarhitecturewithmvp.domain.usecase.get.GetLanguageByIdUseCase
 import com.example.cleanarhitecturewithmvp.domain.usecase.get.GetLanguageUseCase
 import com.example.cleanarhitecturewithmvp.domain.usecase.insert.InsertAllLanguageUseCase
 import com.example.cleanarhitecturewithmvp.domain.usecase.insert.InsertLanguageUseCase
@@ -21,16 +20,16 @@ class UseCaseModule {
 
     @Provides
     @Singleton
-    fun provideRoomRepository(languageDao: LanguageDao, languageModelConverter: LanguageModelConverter): IRoomRepository {
-        return RoomRepository(languageDao,languageModelConverter)
+    fun provideLanguageModelConverter(): LanguageModelConverter {
+        return LanguageModelConverterImpl()
     }
-
 
     @Provides
     @Singleton
-    fun provideGetLanguageByIdUseCase(iRoomRepository: IRoomRepository): GetLanguageByIdUseCase {
-        return GetLanguageByIdUseCase(iRoomRepository)
+    fun provideRoomRepository(languageDataStoreFactory: LanguageDataStoreFactory, languageModelConverter: LanguageModelConverter): IRoomRepository {
+        return DataRepositoryImpl(languageDataStoreFactory, languageModelConverter)
     }
+
 
     @Provides
     @Singleton
@@ -46,11 +45,6 @@ class UseCaseModule {
     }
 
 
-    @Provides
-    @Singleton
-    fun provideDeleteAllLanguageUseCase(iRoomRepository: IRoomRepository): DeleteAllLanguageUseCase {
-        return DeleteAllLanguageUseCase(iRoomRepository)
-    }
 
 
     @Provides

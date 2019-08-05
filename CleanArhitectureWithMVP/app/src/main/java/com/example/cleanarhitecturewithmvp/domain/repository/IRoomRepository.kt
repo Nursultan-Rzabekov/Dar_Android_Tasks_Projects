@@ -14,9 +14,6 @@ interface IRoomRepository {
 
     suspend fun deleteLanguageID(position: Int)
 
-    suspend fun getByLanguageID(position: Int): String?
-
     suspend fun storeAllLanguage(languageList:List<Language>?)
 
-    suspend fun deleteAllLanguageById()
 }

@@ -3,9 +3,7 @@ package com.example.cleanarhitecturewithmvp
 import android.app.Application
 import com.example.cleanarhitecturewithmvp.dagger.component.ApplicationComponent
 import com.example.cleanarhitecturewithmvp.dagger.component.DaggerApplicationComponent
-import com.example.cleanarhitecturewithmvp.dagger.module.AppModule
-import com.example.cleanarhitecturewithmvp.dagger.module.RoomModule
-import com.example.cleanarhitecturewithmvp.dagger.module.UseCaseModule
+import com.example.cleanarhitecturewithmvp.dagger.module.*
 
 
 open class ApplicationClass : Application() {
@@ -17,6 +15,8 @@ open class ApplicationClass : Application() {
         applicationComponent = DaggerApplicationComponent.builder()
                 .useCaseModule(UseCaseModule())
                 .roomModule(RoomModule())
+                .networkModule(NetworkModule())
+                .dataModule(DataModule())
                 .appModule(AppModule(this))
                 .build()
 

@@ -1,17 +1,19 @@
-package com.example.cleanarhitecturewithmvp.data.repository
-
+package com.example.cleanarhitecturewithmvp.room
 
 
 import com.example.cleanarhitecturewithmvp.RemoteDataNotFoundException
 import com.example.cleanarhitecturewithmvp.ReposRefreshError
-import com.example.cleanarhitecturewithmvp.data.dao.LanguageDao
-import com.example.cleanarhitecturewithmvp.data.mapper.LanguageModelConverter
-import com.example.cleanarhitecturewithmvp.data.model.LanguageRoomDB
-import com.example.cleanarhitecturewithmvp.domain.model.Language
-import com.example.cleanarhitecturewithmvp.domain.repository.IRoomRepository
-import kotlinx.coroutines.*
+import com.example.cleanarhitecturewithmvp.data.model.LanguageEntity
+import com.example.cleanarhitecturewithmvp.data.repository.LanguageRoom
+import com.example.cleanarhitecturewithmvp.room.dao.LanguageDao
+import com.example.cleanarhitecturewithmvp.room.mapper.RoomModelConverter
+import com.example.cleanarhitecturewithmvp.room.model.LanguageRoomDB
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-class RoomRepository(private val dataSource: LanguageDao,private val languageModelConverter: LanguageModelConverter): IRoomRepository {
+
+class LanguageRoomImpl(private val dataSource: LanguageDao, private val roomModelConverter: RoomModelConverter): LanguageRoom {
+
 
     override suspend fun getByLanguageID(position: Int): String? {
         return try {
@@ -23,20 +25,20 @@ class RoomRepository(private val dataSource: LanguageDao,private val languageMod
         }
     }
 
-    override suspend fun getAllLanguage() : List<Language> {
+    override suspend fun getAllLanguage() : List<LanguageEntity> {
         return try {
             withContext(Dispatchers.IO) {
-                dataSource.getAllLanguage().map(languageModelConverter::modelToDomain)
+                dataSource.getAllLanguage().map(roomModelConverter::modelToDomain)
             }
         }catch (error: RemoteDataNotFoundException){
             throw  ReposRefreshError(error)
         }
     }
 
-    override suspend fun storeLanguage(language_name: String) {
+    override suspend fun storeLanguage(store: String) {
         try {
             withContext(Dispatchers.IO){
-                val language = LanguageRoomDB(language_name)
+                val language = LanguageRoomDB(store)
                 dataSource.insertLanguage(language)
             }
         }catch (error: RemoteDataNotFoundException){
@@ -44,21 +46,21 @@ class RoomRepository(private val dataSource: LanguageDao,private val languageMod
         }
     }
 
-    override suspend fun storeAllLanguage(languagelist: List<Language>?) {
+    override suspend fun storeAllLanguage(languageList: List<LanguageEntity>?) {
         try {
             withContext(Dispatchers.Default){
-                dataSource.insertAllLanguage(languagelist?.map(languageModelConverter::apiToModel))
+                dataSource.insertAllLanguage(languageList?.map(roomModelConverter::apiToModel))
             }
         } catch (error: RemoteDataNotFoundException){
             throw ReposRefreshError(error)
         }
     }
 
-    override suspend fun updateLanguageName(position: Int, language_name: String) {
+    override suspend fun updateLanguageName(position: Int, language: String) {
         try {
             withContext(Dispatchers.IO){
-                val language = LanguageRoomDB(position+1, language_name)
-                dataSource.updateLanguage(language)
+                val languageRoomDB = LanguageRoomDB(position + 1, language)
+                dataSource.updateLanguage(languageRoomDB)
             }
         }catch (error: RemoteDataNotFoundException){
             throw ReposRefreshError(error)
@@ -85,5 +87,10 @@ class RoomRepository(private val dataSource: LanguageDao,private val languageMod
             throw ReposRefreshError(error)
         }
     }
-}
 
+
+
+    override suspend fun isCached(): Boolean {
+        return dataSource.getAllLanguage().isEmpty()
+    }
+}

@@ -2,6 +2,10 @@ package com.example.cleanarhitecturewithmvp.dagger.module
 
 import android.util.Log
 import com.example.cleanarhitecturewithmvp.BuildConfig
+import com.example.cleanarhitecturewithmvp.data.repository.LanguageRemote
+import com.example.cleanarhitecturewithmvp.remote.LanguageRemoteImpl
+import com.example.cleanarhitecturewithmvp.remote.api.RetrofitApiInterfaceNetwork
+import com.example.cleanarhitecturewithmvp.remote.mapper.RemoteEntityMapper
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
@@ -12,6 +16,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
+import javax.inject.Singleton
 
 @Module
 class NetworkModule {
@@ -49,10 +54,10 @@ class NetworkModule {
         return GsonBuilder().create()
     }
 
-//    @Provides
-//    fun provideNetworkService(retrofit: Retrofit): RetrofitApiInterfaceNetwork {
-//        return retrofit.create(RetrofitApiInterfaceNetwork::class.java)
-//    }
+    @Provides
+    fun provideNetworkService(retrofit: Retrofit): RetrofitApiInterfaceNetwork {
+        return retrofit.create(RetrofitApiInterfaceNetwork::class.java)
+    }
 
     @Provides
     fun getTimeOut(): Int {
@@ -68,7 +73,7 @@ class NetworkModule {
             val request = chain.request()
             val builder = request.newBuilder()
 
-            if (headers != null && headers.size > 0) {
+            if (headers.size > 0) {
                 for ((key, value) in headers) {
                     builder.addHeader(key, value)
                     Log.e(key, value)
@@ -83,6 +88,19 @@ class NetworkModule {
         okBuilder.writeTimeout(timeout.toLong(), TimeUnit.SECONDS)
 
         return okBuilder.build()
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideRemoteModelConverter(): RemoteEntityMapper {
+        return RemoteEntityMapper()
+    }
+
+    @Provides
+    @Singleton
+    fun provideRemoteRepository(retrofitApiInterfaceNetwork: RetrofitApiInterfaceNetwork, remoteEntityMapper: RemoteEntityMapper): LanguageRemote {
+        return LanguageRemoteImpl(retrofitApiInterfaceNetwork, remoteEntityMapper)
     }
 
 }

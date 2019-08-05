@@ -1,7 +1,7 @@
-package com.example.cleanarhitecturewithmvp.data.dao
+package com.example.cleanarhitecturewithmvp.room.dao
 
 import androidx.room.*
-import com.example.cleanarhitecturewithmvp.data.model.LanguageRoomDB
+import com.example.cleanarhitecturewithmvp.room.model.LanguageRoomDB
 
 
 @Dao

@@ -3,11 +3,8 @@ package com.example.cleanarhitecturewithmvp.mvp.roomLanguages
 
 import android.app.Application
 import com.example.cleanarhitecturewithmvp.ApplicationClass
-import com.example.cleanarhitecturewithmvp.data.dao.LanguageDao
 import com.example.cleanarhitecturewithmvp.domain.model.Language
-import com.example.cleanarhitecturewithmvp.domain.usecase.delete.DeleteAllLanguageUseCase
 import com.example.cleanarhitecturewithmvp.domain.usecase.delete.DeleteLanguageUseCase
-import com.example.cleanarhitecturewithmvp.domain.usecase.get.GetLanguageByIdUseCase
 import com.example.cleanarhitecturewithmvp.domain.usecase.get.GetLanguageUseCase
 import com.example.cleanarhitecturewithmvp.domain.usecase.insert.InsertAllLanguageUseCase
 import com.example.cleanarhitecturewithmvp.domain.usecase.insert.InsertLanguageUseCase
@@ -20,13 +17,7 @@ import kotlin.coroutines.CoroutineContext
 class RoomLanguagesPresenterImpl(var postViewI: IRoomLanguagesView, applicationComponent: Application): IRoomLanguagesPresenter, CoroutineScope{
 
     @Inject
-    lateinit var provideGetLanguageByIdUseCase: GetLanguageByIdUseCase
-
-    @Inject
     lateinit var provideGetLanguageUseCase: GetLanguageUseCase
-
-    @Inject
-    lateinit var provideDeleteAllLanguageUseCase: DeleteAllLanguageUseCase
 
     @Inject
     lateinit var provideDeleteLanguageUseCase: DeleteLanguageUseCase
@@ -49,11 +40,6 @@ class RoomLanguagesPresenterImpl(var postViewI: IRoomLanguagesView, applicationC
     override val coroutineContext: CoroutineContext
         get() = viewModelJob + Dispatchers.Main
 
-    override fun getByLanguageID(position: Int) {
-        this.launch(coroutineContext){
-            provideGetLanguageByIdUseCase.execute(position)
-        }
-    }
 
     override fun getAllLanguage() =
         this.launch(coroutineContext){
@@ -66,10 +52,10 @@ class RoomLanguagesPresenterImpl(var postViewI: IRoomLanguagesView, applicationC
         }
     }
 
-    override fun storeLanguage(language_name: String) {
+    override fun storeLanguage(store: String) {
         this.launch(coroutineContext){
-            val language = Language(language_name)
-            provideInsertLanguageUseCase.execute(language_name)
+            val language = Language(store)
+            provideInsertLanguageUseCase.execute(store)
             postViewI.storeLanguage(language)
         }
     }
@@ -79,13 +65,6 @@ class RoomLanguagesPresenterImpl(var postViewI: IRoomLanguagesView, applicationC
             val language = Language(language_name)
             provideUpdateLanguageUseCase.execute(position,language_name)
             postViewI.updateLanguage(position,language)
-        }
-    }
-
-    override fun deleteAllLanguage() {
-        this.launch(coroutineContext){
-            provideDeleteAllLanguageUseCase.execute()
-            postViewI.deleteLanguage()
         }
     }
 

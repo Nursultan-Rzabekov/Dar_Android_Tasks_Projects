@@ -9,7 +9,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.cleanarhitecturewithmvp.R
-import com.example.cleanarhitecturewithmvp.data.database.LanguagesDatabase
 import com.example.cleanarhitecturewithmvp.domain.model.Language
 import com.example.cleanarhitecturewithmvp.mvp.BaseActivity
 import com.example.cleanarhitecturewithmvp.mvp.adapters.MyRecyclerTestViewAdapter
@@ -24,12 +23,10 @@ class LanguagesTestActivity : BaseActivity(), IRoomLanguagesView, MyRecyclerTest
     private var postPresenter: RoomLanguagesPresenterImpl?=null
     private var myLanguageArrayList: ArrayList<Language>? = null
 
-    // ABSTRACT FUNCTION SET LAYOUT
     override fun setLayout(): Int {
         return R.layout.activity_main
     }
 
-    // ABSTRACT FUNCTION INIT
     override fun init(savedInstanceState: Bundle?) {
         getPresenter()?.getAllLanguage()
 
@@ -51,19 +48,16 @@ class LanguagesTestActivity : BaseActivity(), IRoomLanguagesView, MyRecyclerTest
         dialog.show()
     }
 
-    // PRESENTER ROOM DATABASE
     private fun getPresenter(): RoomLanguagesPresenterImpl?{
         postPresenter = RoomLanguagesPresenterImpl(this, application)
         return postPresenter
     }
 
 
-    // ABSTRACT FUNCTION
     override fun onStartScreen() {
         Toast.makeText(applicationContext, "Hello", Toast.LENGTH_SHORT).show()
     }
 
-    // ABSTRACT FUNCTION
     override fun stopScreen() {
         super.onStop()
         postPresenter?.let {
@@ -72,36 +66,7 @@ class LanguagesTestActivity : BaseActivity(), IRoomLanguagesView, MyRecyclerTest
         }
     }
 
-//    //GET DATA FROM SERVER REST API REQUEST
-//    override fun showAllPosts(languagesList: List<LanguageRoomDB>) {
-//        val a = myLanguageArrayList?.count()
-//        for (i in 0 until languagesList.count()) {
-//            myLanguageArrayList?.add(a!! + i, languagesList.elementAt(i))
-//        }
-//        getPresenter()?.storeLanguageAll(myLanguageArrayList)
-//        recycler_view.adapter?.notifyDataSetChanged()
-//    }
-//
-//    override fun storePost(languageData: LanguageRoomDB) {
-//        myLanguageArrayList?.add(languageData)
-//        recycler_view.adapter?.notifyItemInserted(myLanguageArrayList?.lastIndex!!)
-//    }
-//
-//    override fun updatePost(position: Int, languageData:LanguageRoomDB) {
-//        myLanguageArrayList?.removeAt(position)
-//        myLanguageArrayList?.add(position,languageData)
-//        recycler_view.adapter?.notifyDataSetChanged()
-//    }
-//
-//    override fun deletePost(position: Int) {
-//        myLanguageArrayList?.removeAt(position)
-//        recycler_view.adapter?.notifyItemRemoved(position)
-//    }
-//
-//    // END
 
-
-    // GET DATA FROM ROOM DATABASE LOCAL DATABASE(SQ_LITE)
     override fun showAllLanguage(languagesList: List<Language>) {
         myLanguageArrayList = ArrayList(languagesList)
         recycler_view.layoutManager = LinearLayoutManager(this)
@@ -129,7 +94,6 @@ class LanguagesTestActivity : BaseActivity(), IRoomLanguagesView, MyRecyclerTest
         recycler_view.adapter?.notifyItemRemoved(position)
     }
 
-    // END
 
 
     override fun onItemClick(language: Language, position: Int) {

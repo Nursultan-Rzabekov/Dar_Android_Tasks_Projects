@@ -1,25 +1,27 @@
 package com.example.cleanarhitecturewithmvp.data.mapper
 
-import com.example.cleanarhitecturewithmvp.data.model.LanguageRoomDB
+import com.example.cleanarhitecturewithmvp.data.model.LanguageEntity
 import com.example.cleanarhitecturewithmvp.domain.model.Language
 
 class LanguageModelConverterImpl : LanguageModelConverter {
 
 
-    override fun modelToDomain(languageRoomDB: LanguageRoomDB): Language {
+    override fun modelToDomain(languageEntity: LanguageEntity): Language {
         return Language(
-            languageRoomDB.id,
-            languageRoomDB.languageName,
-            languageRoomDB.created_at,
-            languageRoomDB.updated_at
+            languageEntity.id,
+            languageEntity.languageName,
+            languageEntity.created_at,
+            languageEntity.updated_at
         )
     }
 
 
-    override fun apiToModel(language: Language): LanguageRoomDB {
-        return LanguageRoomDB(
+    override fun apiToModel(language: Language): LanguageEntity {
+        return LanguageEntity(
             language.id,
-            language.languageName
+            language.languageName,
+            language.created_at,
+            language.updated_at
         )
     }
 }
