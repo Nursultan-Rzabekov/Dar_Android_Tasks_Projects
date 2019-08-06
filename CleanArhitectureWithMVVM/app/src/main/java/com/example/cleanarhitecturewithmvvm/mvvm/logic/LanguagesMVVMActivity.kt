@@ -1,4 +1,4 @@
-package com.example.cleanarhitecturewithmvp.mvp.roomLanguages
+package com.example.cleanarhitecturewithmvvm.mvvm.logic
 
 import android.annotation.SuppressLint
 import android.app.Dialog
@@ -7,28 +7,40 @@ import android.os.Bundle
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.cleanarhitecturewithmvp.R
-import com.example.cleanarhitecturewithmvp.domain.model.Language
-import com.example.cleanarhitecturewithmvp.mvp.BaseActivity
-import com.example.cleanarhitecturewithmvp.mvp.adapters.MyRecyclerTestViewAdapter
+import com.example.cleanarhitecturewithmvvm.ApplicationClass
+import com.example.cleanarhitecturewithmvvm.R
+import com.example.cleanarhitecturewithmvvm.domain.model.Language
+import com.example.cleanarhitecturewithmvvm.extension.observe
+import com.example.cleanarhitecturewithmvvm.mvvm.BaseActivity
+import com.example.cleanarhitecturewithmvvm.mvvm.adapters.MyRecyclerTestViewAdapter
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.dialog_store.*
 import kotlinx.android.synthetic.main.language_detail.*
+import javax.inject.Inject
 
 
-class LanguagesTestActivity : BaseActivity(), IRoomLanguagesView, MyRecyclerTestViewAdapter.Listener{
+class LanguagesMVVMActivity : BaseActivity() , MyRecyclerTestViewAdapter.Listener{
 
-    private var postPresenter: RoomLanguagesPresenterImpl?=null
+    @Inject
+    lateinit var provideLanguagesViewModelFactory: LanguagesViewModelFactory
+
+    private lateinit var viewModel: LanguagesViewModel
     private var myLanguageArrayList: ArrayList<Language>? = null
 
     override fun setLayout(): Int {
         return R.layout.activity_main
     }
 
+
     override fun init(savedInstanceState: Bundle?) {
-        getPresenter()?.getAllLanguage()
+        (application as ApplicationClass).applicationComponent.inject(this)
+
+        getViewModel()?.getAllLanguage().let{
+            observe(viewModel.languagesList,::showAllLanguage)
+        }
 
         fab.setOnClickListener{
             newDialog()
@@ -42,59 +54,59 @@ class LanguagesTestActivity : BaseActivity(), IRoomLanguagesView, MyRecyclerTest
 
         dialog.push_language.setOnClickListener {
             if (dialog.edit_language.text.toString().isNotEmpty()) {
-                getPresenter()?.storeLanguage(dialog.edit_language.text.toString())
+                getViewModel()?.storeLanguage(dialog.edit_language.text.toString())
+                val language = Language(dialog.edit_language.text.toString())
+                storeLanguage(language)
             }
         }
         dialog.show()
     }
 
-    private fun getPresenter(): RoomLanguagesPresenterImpl?{
-        postPresenter = RoomLanguagesPresenterImpl(this, application)
-        return postPresenter
+    private fun getViewModel(): LanguagesViewModel? {
+        viewModel = ViewModelProviders.of(this, provideLanguagesViewModelFactory).
+            get(LanguagesViewModel::class.java)
+
+        return viewModel
     }
 
-
-    override fun onStartScreen() {
-        Toast.makeText(applicationContext, "Hello", Toast.LENGTH_SHORT).show()
-    }
-
-    override fun stopScreen() {
+    override fun onStop() {
         super.onStop()
-        postPresenter?.let {
-            postPresenter = null
-            postPresenter?.onDestroy()
-        }
+        Toast.makeText(applicationContext, "Stopped", Toast.LENGTH_SHORT).show()
+        viewModel.onDestroy()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        Toast.makeText(applicationContext, "Destroyed", Toast.LENGTH_SHORT).show()
+        viewModel.onDestroy()
+    }
 
-    override fun showAllLanguage(languagesList: List<Language>) {
+    private fun showAllLanguage(languagesList: List<Language>?) {
         myLanguageArrayList = ArrayList(languagesList)
         recycler_view.layoutManager = LinearLayoutManager(this)
         recycler_view.adapter = MyRecyclerTestViewAdapter(myLanguageArrayList!!, this)
     }
 
-    override fun storeLanguage(roomDB: Language) {
+    private fun storeLanguage(roomDB: Language) {
         myLanguageArrayList?.add(roomDB)
         recycler_view.adapter?.notifyItemInserted(myLanguageArrayList?.lastIndex!!)
     }
 
-    override fun deleteLanguage() {
-        recycler_view.adapter?.notifyItemRangeRemoved(0,myLanguageArrayList?.lastIndex!!)
-        myLanguageArrayList?.clear()
-    }
+//    private fun deleteLanguage() {
+//        recycler_view.adapter?.notifyItemRangeRemoved(0,myLanguageArrayList?.lastIndex!!)
+//        myLanguageArrayList?.clear()
+//    }
 
-    override fun updateLanguage(position: Int, languageData: Language) {
+    private fun updateLanguage(position: Int, languageData: Language) {
         myLanguageArrayList?.removeAt(position)
         myLanguageArrayList?.add(position,languageData)
         recycler_view.adapter?.notifyDataSetChanged()
     }
 
-    override fun deleteLanguageByLanguageID(position: Int) {
+    private fun deleteLanguageByLanguageID(position: Int) {
         myLanguageArrayList?.removeAt(position)
         recycler_view.adapter?.notifyItemRemoved(position)
     }
-
-
 
     override fun onItemClick(language: Language, position: Int) {
         val dialog = Dialog(this)
@@ -114,7 +126,8 @@ class LanguagesTestActivity : BaseActivity(), IRoomLanguagesView, MyRecyclerTest
         }
 
         dialog.delete.setOnClickListener {
-            getPresenter()?.deleteLanguageByID(position)
+            getViewModel()?.deleteLanguageByID(position)
+            deleteLanguageByLanguageID(position)
         }
         dialog.show()
     }
@@ -131,7 +144,9 @@ class LanguagesTestActivity : BaseActivity(), IRoomLanguagesView, MyRecyclerTest
 
         builder.setPositiveButton(android.R.string.yes) { _ , _ ->
             if(editText.text.toString().isNotEmpty()){
-                getPresenter()?.updateLanguageName(position,editText.text.toString())
+                getViewModel()?.updateLanguageName(position,editText.text.toString())
+                val languageModel = Language(editText.text.toString())
+                updateLanguage(position,languageModel)
             }
         }
         builder.setNegativeButton(android.R.string.no) { dialog, _ ->
