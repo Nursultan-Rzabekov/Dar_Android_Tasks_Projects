@@ -6,5 +6,3 @@ Feel free to report or add any useful feature, I will be glad to improve it with
 
 Developed By
 Nursultan Rzabekov - nursbrat991229@gmail.com or 170107151@stu.sdu.edu.kz
-
-Firebase Rest Api best practices MVC pattern (Model(Json -> Pojo) View(Activity or Fragment) Controller(Api such as method(Get,Post,Put,Patch,Delete)) 
