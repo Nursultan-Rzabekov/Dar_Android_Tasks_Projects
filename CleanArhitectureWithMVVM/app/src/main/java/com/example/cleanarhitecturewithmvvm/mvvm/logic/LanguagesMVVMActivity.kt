@@ -3,6 +3,7 @@ package com.example.cleanarhitecturewithmvvm.mvvm.logic
 import android.annotation.SuppressLint
 import android.app.Dialog
 import android.os.Bundle
+import android.util.Log
 
 import android.widget.EditText
 import android.widget.Toast
@@ -15,6 +16,7 @@ import com.example.cleanarhitecturewithmvvm.domain.model.Language
 import com.example.cleanarhitecturewithmvvm.extension.observe
 import com.example.cleanarhitecturewithmvvm.mvvm.BaseActivity
 import com.example.cleanarhitecturewithmvvm.mvvm.adapters.MyRecyclerTestViewAdapter
+import com.example.cleanarhitecturewithmvvm.mvvm.helpers.LocationListener
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.dialog_store.*
@@ -29,14 +31,16 @@ class LanguagesMVVMActivity : BaseActivity() , MyRecyclerTestViewAdapter.Listene
 
     private lateinit var viewModel: LanguagesViewModel
     private var myLanguageArrayList: ArrayList<Language>? = null
+    private lateinit var locationListener: LocationListener
 
     override fun setLayout(): Int {
         return R.layout.activity_main
     }
 
-
     override fun init(savedInstanceState: Bundle?) {
         (application as ApplicationClass).applicationComponent.inject(this)
+
+        setupLocationListener()
 
         getViewModel()?.getAllLanguage().let{
             observe(viewModel.languagesList,::showAllLanguage)
@@ -46,6 +50,12 @@ class LanguagesMVVMActivity : BaseActivity() , MyRecyclerTestViewAdapter.Listene
             newDialog()
         }
 
+    }
+
+    private fun setupLocationListener() {
+        locationListener = LocationListener(lifecycle) { location ->
+            Log.d("MainActivity", "Location is $location")
+        }
     }
 
     private fun newDialog(){
@@ -82,6 +92,7 @@ class LanguagesMVVMActivity : BaseActivity() , MyRecyclerTestViewAdapter.Listene
     }
 
     private fun showAllLanguage(languagesList: List<Language>?) {
+        locationListener.enable()
         myLanguageArrayList = ArrayList(languagesList)
         recycler_view.layoutManager = LinearLayoutManager(this)
         recycler_view.adapter = MyRecyclerTestViewAdapter(myLanguageArrayList!!, this)
@@ -91,11 +102,6 @@ class LanguagesMVVMActivity : BaseActivity() , MyRecyclerTestViewAdapter.Listene
         myLanguageArrayList?.add(roomDB)
         recycler_view.adapter?.notifyItemInserted(myLanguageArrayList?.lastIndex!!)
     }
-
-//    private fun deleteLanguage() {
-//        recycler_view.adapter?.notifyItemRangeRemoved(0,myLanguageArrayList?.lastIndex!!)
-//        myLanguageArrayList?.clear()
-//    }
 
     private fun updateLanguage(position: Int, languageData: Language) {
         myLanguageArrayList?.removeAt(position)
