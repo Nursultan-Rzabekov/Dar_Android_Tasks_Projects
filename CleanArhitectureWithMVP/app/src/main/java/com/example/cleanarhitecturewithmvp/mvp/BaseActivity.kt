@@ -5,18 +5,22 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.widget.Toast
 import androidx.annotation.LayoutRes
-import androidx.appcompat.app.AppCompatActivity
 import com.example.cleanarhitecturewithmvp.R
+import dagger.android.support.DaggerAppCompatActivity
+import moxy.MvpDelegate
 
 
-abstract class BaseActivity : AppCompatActivity(),IView {
+abstract class BaseActivity : DaggerAppCompatActivity(), IView {
+
     private var mProgressDialog: ProgressDialog?=null
+    private var mvpDelegate: MvpDelegate<out BaseActivity>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(setLayout())
         initializeProgressDialog()
         init(savedInstanceState)
+        getMvpDelegate().onCreate(savedInstanceState)
 
     }
 
@@ -27,6 +31,27 @@ abstract class BaseActivity : AppCompatActivity(),IView {
             mProgressDialog!!.setCancelable(false)
         }
 
+    }
+
+    override fun onStart() {
+        super.onStart()
+        getMvpDelegate().onAttach()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        getMvpDelegate().onAttach()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        getMvpDelegate().onDetach()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        getMvpDelegate().onSaveInstanceState(outState)
+        getMvpDelegate().onDetach()
     }
 
     override fun onPostCreate(savedInstanceState: Bundle?) {
@@ -40,6 +65,7 @@ abstract class BaseActivity : AppCompatActivity(),IView {
         System.runFinalization()
         dismissProgress()
         mProgressDialog=null
+        getMvpDelegate().onDestroyView()
     }
 
     @LayoutRes
@@ -65,15 +91,6 @@ abstract class BaseActivity : AppCompatActivity(),IView {
         mProgressDialog?.show()
     }
 
-//    fun setCancelableProgress(isCancel: Boolean) {
-//        if (mProgressDialog != null) {
-//            mProgressDialog?.setCancelable(true)
-//        }
-//    }
-
-    /**
-     * cancel progress dialog.
-     */
     private fun dismissProgress() {
         if (mProgressDialog != null && mProgressDialog!!.isShowing) {
             mProgressDialog?.dismiss()
@@ -99,4 +116,13 @@ abstract class BaseActivity : AppCompatActivity(),IView {
     private fun showHttpError(e: Throwable) {
       loadError(e.localizedMessage)
     }
+
+
+    fun getMvpDelegate(): MvpDelegate<*> {
+        if (mvpDelegate == null) {
+            mvpDelegate = MvpDelegate(this)
+        }
+        return mvpDelegate!!
+    }
+
 }

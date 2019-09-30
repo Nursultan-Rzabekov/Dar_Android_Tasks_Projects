@@ -63,15 +63,7 @@ abstract class BaseActivity : AppCompatActivity(),IView {
         mProgressDialog?.show()
     }
 
-//    fun setCancelableProgress(isCancel: Boolean) {
-//        if (mProgressDialog != null) {
-//            mProgressDialog?.setCancelable(true)
-//        }
-//    }
 
-    /**
-     * cancel progress dialog.
-     */
     private fun dismissProgress() {
         if (mProgressDialog != null && mProgressDialog!!.isShowing) {
             mProgressDialog?.dismiss()

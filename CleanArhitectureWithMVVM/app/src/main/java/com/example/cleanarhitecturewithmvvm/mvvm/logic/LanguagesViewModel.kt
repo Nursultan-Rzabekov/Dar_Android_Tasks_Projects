@@ -45,18 +45,13 @@ class LanguagesViewModel(applicationComponent: Application): CoroutineScope, Vie
         get() = viewModelJob + Dispatchers.Main
 
     fun getAllLanguage() =
-        this.launch(coroutineContext){
+        this.launch{
             languagesList.value = provideGetLanguageUseCase.execute()
         }
 
-//    fun storeLanguageAll(languageList: ArrayList<Language>?) {
-//        this.launch(coroutineContext){
-//            provideInsertAllLanguageUseCase.execute(languageList)
-//        }
-//    }
 
     fun storeLanguage(store: String) {
-        this.launch(coroutineContext){
+        this.launch{
             provideInsertLanguageUseCase.execute(store)
         }
     }

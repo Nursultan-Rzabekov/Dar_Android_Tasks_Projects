@@ -15,6 +15,7 @@ class MyRecyclerTestViewAdapter (private val languageList : ArrayList<Language>,
     interface Listener {
         fun onItemClick(language: Language, position: Int)
     }
+
     private val colors : Array<String> = arrayOf("#7E57C2", "#42A5F5", "#26C6DA", "#66BB6A", "#FFEE58", "#FF7043" , "#EC407A" , "#d32f2f")
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

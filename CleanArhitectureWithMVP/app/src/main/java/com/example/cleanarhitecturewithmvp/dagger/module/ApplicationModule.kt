@@ -1,18 +1,15 @@
 package com.example.cleanarhitecturewithmvp.dagger.module
 
 import android.app.Application
+import android.content.Context
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
 
 @Module
-class AppModule(application: Application) {
-
-    private var applicationInst: Application = application
+class ApplicationModule {
 
     @Provides
     @Singleton
-    fun provideApplication(): Application {
-        return applicationInst
-    }
+    fun provideContext(application: Application): Context = application
 }

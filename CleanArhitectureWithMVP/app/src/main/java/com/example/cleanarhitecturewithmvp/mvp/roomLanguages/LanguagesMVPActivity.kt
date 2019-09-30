@@ -16,11 +16,20 @@ import com.example.cleanarhitecturewithmvp.mvp.adapters.MyRecyclerTestViewAdapte
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.dialog_store.*
 import kotlinx.android.synthetic.main.language_detail.*
+import moxy.presenter.InjectPresenter
+import moxy.presenter.ProvidePresenter
+import javax.inject.Inject
 
 
 class LanguagesMVPActivity : BaseActivity(), IRoomLanguagesView, MyRecyclerTestViewAdapter.Listener{
 
-    private var postPresenter: RoomLanguagesPresenterImpl?=null
+    @Inject
+    @InjectPresenter
+    lateinit var roomLanguagesPresenterImpl: RoomLanguagesPresenterImpl
+
+    @ProvidePresenter
+    fun providePresenter(): RoomLanguagesPresenterImpl = roomLanguagesPresenterImpl
+
     private var myLanguageArrayList: ArrayList<Language>? = null
 
     override fun setLayout(): Int {
@@ -28,7 +37,8 @@ class LanguagesMVPActivity : BaseActivity(), IRoomLanguagesView, MyRecyclerTestV
     }
 
     override fun init(savedInstanceState: Bundle?) {
-        getPresenter()?.getAllLanguage()
+
+        roomLanguagesPresenterImpl.getAllLanguage()
 
         fab.setOnClickListener{
             newDialog()
@@ -42,17 +52,11 @@ class LanguagesMVPActivity : BaseActivity(), IRoomLanguagesView, MyRecyclerTestV
 
         dialog.push_language.setOnClickListener {
             if (dialog.edit_language.text.toString().isNotEmpty()) {
-                getPresenter()?.storeLanguage(dialog.edit_language.text.toString())
+                //providePresenter().storeLanguage(dialog.edit_language.text.toString())
             }
         }
         dialog.show()
     }
-
-    private fun getPresenter(): RoomLanguagesPresenterImpl?{
-        postPresenter = RoomLanguagesPresenterImpl(this, application)
-        return postPresenter
-    }
-
 
     override fun onStartScreen() {
         Toast.makeText(applicationContext, "Hello", Toast.LENGTH_SHORT).show()
@@ -60,14 +64,12 @@ class LanguagesMVPActivity : BaseActivity(), IRoomLanguagesView, MyRecyclerTestV
 
     override fun stopScreen() {
         super.onStop()
-        postPresenter?.let {
-            postPresenter = null
-            postPresenter?.onDestroy()
-        }
+        roomLanguagesPresenterImpl.onDestroy()
     }
 
 
     override fun showAllLanguage(languagesList: List<Language>) {
+        println("$$$$$$$$$$$ $languagesList")
         myLanguageArrayList = ArrayList(languagesList)
         recycler_view.layoutManager = LinearLayoutManager(this)
         recycler_view.adapter = MyRecyclerTestViewAdapter(myLanguageArrayList!!, this)
@@ -114,7 +116,7 @@ class LanguagesMVPActivity : BaseActivity(), IRoomLanguagesView, MyRecyclerTestV
         }
 
         dialog.delete.setOnClickListener {
-            getPresenter()?.deleteLanguageByID(position)
+            //providePresenter().deleteLanguageByID(position)
         }
         dialog.show()
     }
@@ -131,7 +133,7 @@ class LanguagesMVPActivity : BaseActivity(), IRoomLanguagesView, MyRecyclerTestV
 
         builder.setPositiveButton(android.R.string.yes) { _ , _ ->
             if(editText.text.toString().isNotEmpty()){
-                getPresenter()?.updateLanguageName(position,editText.text.toString())
+                //providePresenter().updateLanguageName(position,editText.text.toString())
             }
         }
         builder.setNegativeButton(android.R.string.no) { dialog, _ ->

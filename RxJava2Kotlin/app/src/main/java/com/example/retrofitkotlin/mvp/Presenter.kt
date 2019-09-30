@@ -32,7 +32,6 @@ open class Presenter<V>(@Volatile var view: V? ){
         compositeDisposables.dispose()
         this.view = null
     }
-
     fun addDisposable(disposable: Disposable) {
         compositeDisposables.add(disposable)
     }

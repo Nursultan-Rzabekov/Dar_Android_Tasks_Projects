@@ -1,4 +1,4 @@
-package com.example.cleanarhitecturewithmvvm.exceptions
+package com.example.cleanarhitecturewithmvp.exceptions
 
 
 class ReposRefreshError(cause: Throwable) : Throwable(cause.message, cause)

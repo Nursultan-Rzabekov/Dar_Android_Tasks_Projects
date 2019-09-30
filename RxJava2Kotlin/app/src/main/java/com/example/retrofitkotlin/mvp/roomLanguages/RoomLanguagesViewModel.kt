@@ -33,8 +33,7 @@ class RoomLanguagesViewModel(private val dataSource: LanguageDao): IRoomLanguage
         return dataSource.deleteLanguageByID(position+1)
     }
 
-    override fun deleteLanguage(position: Int) {
-        return dataSource.deleteAllLanguage()
+    override fun deleteLanguage(position: Int) { return dataSource.deleteAllLanguage()
     }
 
 }

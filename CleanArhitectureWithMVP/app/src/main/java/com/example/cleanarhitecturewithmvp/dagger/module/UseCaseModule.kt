@@ -31,11 +31,11 @@ class UseCaseModule {
     }
 
 
-    @Provides
-    @Singleton
-    fun provideGetLanguageUseCase(iRoomRepository: IRoomRepository): GetLanguageUseCase {
-        return GetLanguageUseCase(iRoomRepository)
-    }
+//    @Provides
+//    @Singleton
+//    fun provideGetLanguageUseCase(iRoomRepository: IRoomRepository): GetLanguageUseCase {
+//        return GetLanguageUseCase(iRoomRepository)
+//    }
 
 
     @Provides
